@@ -1,0 +1,14 @@
+<config>
+  <drawing_window>
+    <draw_button>
+      <font>微软雅黑 36px</font>
+      <bounds>100, 100, 300, 500</bounds>
+    </draw_button>
+
+    <draw_view>
+      <font>微软雅黑 24px</font>
+      <bounds>100, 500, 300, 30</bounds>
+    </draw_view>
+    <background></background>
+  </drawing_window>
+</config>

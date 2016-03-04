@@ -3,8 +3,11 @@ executable("drawing") {
   sources = [
     "main.cc",
     "drawing_window.cc",
+    "config_node.cc",
   ]
   deps = [
     "//nelf",
+    "//azer/math",
+    "//azer/util/xml",
   ]
 }
