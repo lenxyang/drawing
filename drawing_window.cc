@@ -108,7 +108,6 @@ WindowContents::WindowContents(ConfigNode* node)
 }
 
 void WindowContents::WindowClosing() {
-  base::MessageLoopForUI::current()->Quit();
 }
 
 void WindowContents::ButtonPressed(views::Button* sender, const ui::Event& event) {
