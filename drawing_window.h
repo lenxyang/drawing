@@ -21,8 +21,12 @@ class WindowContents : public views::WidgetDelegateView,
   View* GetContentsView() override { return this; }
   void WindowClosing() override;
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+  bool OnKeyReleased(const ui::KeyEvent& event) override;
  private:
   bool drawing_;
+  std::string start_title_;
+  std::string stop_title_;
   views::LabelButton* button_;
   DrawingView* drawing_view_;
   scoped_ptr<gfx::FontList> button_frontlist_;

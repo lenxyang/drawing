@@ -68,17 +68,17 @@ const ConfigNode* ConfigNode::root() const {
   return NULL;
 }
 
-const ConfigNodePtr& ConfigNode::child_at(int32 index) const {
+const ConfigNode* ConfigNode::child_at(int32 index) const {
   DCHECK_LT(index, child_count());
   return children_[index];
 }
 
-ConfigNodePtr& ConfigNode::child_at(int32 index) {
+ConfigNode* ConfigNode::child_at(int32 index) {
   DCHECK_LT(index, child_count());
   return children_[index];
 }
 
-bool ConfigNode::AddChild(ConfigNodePtr node) {
+bool ConfigNode::AddChild(ConfigNode* node) {
   DCHECK(!node->parent());
   if (Contains(node)) {
     return false;
@@ -109,7 +109,7 @@ ConfigNodes ConfigNode::GetTaggedChildren(
   return vec;
 }
 
-ConfigNodePtr ConfigNode::GetNodeFromPath(const std::string& path) {
+ConfigNode* ConfigNode::GetNodeFromPath(const std::string& path) {
   if (StartsWithASCII(path, "//", false)) {
     return root()->GetNodeFromPath(path.substr(2));
   } else {
@@ -126,12 +126,12 @@ ConfigNodePtr ConfigNode::GetNodeFromPath(const std::string& path) {
         LOG(ERROR) << "Failed to get node: " << path << ", node: \""
                    << cur->GetNodePath() << "\" has no child named \"" 
                    << name << "\"";
-        return ConfigNodePtr();
+        return NULL;
       } if (nodes.size() > 1u) {
         LOG(ERROR) << "Failed to get node: " << path << ", node: \""
                    << cur->GetNodePath() << "\" has too many children named \"" 
                    << name << "\"";
-        return ConfigNodePtr();
+        return NULL;
       }
     }
 
@@ -164,23 +164,23 @@ ConfigNodes ConfigNode::GetNodeWithAttr(const std::string& name,
   return nodes;
 }
 
-ConfigNodePtr ConfigNode::GetFirstChildTagged(const std::string& tag) const {
+ConfigNode* ConfigNode::GetFirstChildTagged(const std::string& tag) const {
   for (auto iter = children_.begin(); iter != children_.end(); ++iter) {
     if ((*iter)->tagname() == tag)
       return *iter;
   }
 
-  return ConfigNodePtr();
+  return NULL;
 }
 
-ConfigNodePtr ConfigNode::GetLastChildTagged(
+ConfigNode* ConfigNode::GetLastChildTagged(
     const std::string& name) const {
   for (auto iter = children_.rbegin(); iter != children_.rend(); ++iter) {
     if ((*iter)->tagname() == name)
       return *iter;
   }
 
-  return ConfigNodePtr();
+  return NULL;
 }
 
 bool ConfigNode::HasTaggedChild(const std::string& name) const {

@@ -40,21 +40,21 @@ class ConfigNode : public ::base::RefCounted<ConfigNode> {
   const ConfigNodes& children() const { return children_;}
   ConfigNodes& children() { return children_;}
   int32 child_count() const { return static_cast<int>(children_.size());}
-  const ConfigNodePtr& child_at(int32 index) const;
-  ConfigNodePtr& child_at(int32 index);
+  const ConfigNode* child_at(int32 index) const;
+  ConfigNode* child_at(int32 index);
 
-  bool AddChild(ConfigNodePtr node);
+  bool AddChild(ConfigNode* node);
   bool Contains(ConfigNode* node) const;
   bool HasTaggedChild(const std::string& name) const;
   ConfigNodes GetTaggedChildren(const std::string& name) const;
 
   // get children from path(not xpath, like file path)
-  ConfigNodePtr GetNodeFromPath(const std::string& path);
+  ConfigNode* GetNodeFromPath(const std::string& path);
   std::string GetNodePath() const;
 
   ConfigNodes GetNodeWithAttr(const std::string& name, const std::string& value);
-  ConfigNodePtr GetFirstChildTagged(const std::string& tag) const;
-  ConfigNodePtr GetLastChildTagged(const std::string& tag) const;
+  ConfigNode* GetFirstChildTagged(const std::string& tag) const;
+  ConfigNode* GetLastChildTagged(const std::string& tag) const;
 
   std::string print_info();
  private:

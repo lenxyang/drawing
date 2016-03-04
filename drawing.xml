@@ -1,14 +1,16 @@
 <config>
-  <drawing_window>
-    <draw_button>
-      <font>微软雅黑 36px</font>
+  <node name="draw_window">
+    <node name="draw_button">
+      <font>Microsoft MHei, 36px</font>
       <bounds>100, 100, 300, 500</bounds>
-    </draw_button>
+      <start_title>开始</start_title>
+      <stop_title>停</stop_title>
+    </node>
 
-    <draw_view>
-      <font>微软雅黑 24px</font>
+    <node name="draw_view">
+      <font>Microsoft MHei, 24px</font>
       <bounds>100, 500, 300, 30</bounds>
-    </draw_view>
-    <background></background>
-  </drawing_window>
+    </node>
+    <background>255, 255, 255, 255</background>
+  </node>
 </config>
