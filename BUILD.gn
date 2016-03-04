@@ -1,0 +1,10 @@
+
+executable("drawing") {
+  sources = [
+    "main.cc",
+    "drawing_window.cc",
+  ]
+  deps = [
+    "//nelf",
+  ]
+}
