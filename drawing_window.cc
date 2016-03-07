@@ -10,13 +10,15 @@
 #include "ui/gfx/font_list.h"
 #include "drawing/drawing.h"
 #include "azer/util/xml/xml.h"
+#include "drawing/show_animation.h"
 #include "drawing/config_node.h"
 #include "drawing/drawing_view.h"
 
 using base::UTF8ToUTF16;
 
 
-DrawingWindow::DrawingWindow(const ::base::FilePath& path) {
+DrawingWindow::DrawingWindow(const ::base::FilePath& path)
+    : state_(kInit) {
   SetFocusable(true);
 
   std::string str;
@@ -30,6 +32,10 @@ DrawingWindow::DrawingWindow(const ::base::FilePath& path) {
   ConfigNode* cfg = config->GetNodeFromPath("//draw_window");
   SkColor bgcol = StringToColor(cfg->GetChildTextString("background"));
   set_background(views::Background::CreateSolidBackground(bgcol));
+
+  ConfigNode* animations_config = config->GetFirstChildTagged("animations");
+  animation_ = new ShowAnimationView(animations_config);
+  AddChildView(animation_);
 }
 
 void DrawingWindow::WindowClosing() {
@@ -37,6 +43,7 @@ void DrawingWindow::WindowClosing() {
 
 void DrawingWindow::Layout() {
   drawing_view_->SetBoundsRect(GetContentsBounds());
+  animation_->SetBoundsRect(GetContentsBounds());
 }
 
 
@@ -49,8 +56,21 @@ bool DrawingWindow::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool DrawingWindow::OnKeyReleased(const ui::KeyEvent& event) {
-  if (event.key_code() == ui::VKEY_ESCAPE)
-    GetWidget()->Close();
+  if (state_ == kEndDrawing || state_ == kInit) {
+    if (event.key_code() == ui::VKEY_ESCAPE)
+      GetWidget()->Close();
+  }
+
+  if (event.key_code() == ui::VKEY_RETURN
+      || event.key_code() == ui::VKEY_SPACE) {
+    if (state_ == kInit) {
+      state_ = kShowAnimation;
+      animation_->Start();
+    } else if (state_ == kStartDrawing) {
+    } else {
+    }
+  }
+
   return true;
 }
 

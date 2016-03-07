@@ -18,12 +18,14 @@
 
   <round total_count="5">
     <round id="1">
-      <pictures>
-        <img></img>
-        <img></img>
-        <img></img>
-        <img></img>
-      </pictures>
+      <animations frame_count="2">
+        <animation key="" frame="1">
+          <path></path>
+          <init_bounds></init_bounds>
+          <target_bounds></target_bounds>
+          <duration></duration>
+        </animation>
+      </animations>
     </round>
   </round>
 </config>

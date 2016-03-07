@@ -6,11 +6,7 @@
 
 class ConfigNode;
 class DrawingView;
-
-class AnimationView : public views::View {
- public:
-  
-};
+class ShowAnimationView;
 
 class DrawingWindow : public views::WidgetDelegateView {
  public:
@@ -28,6 +24,14 @@ class DrawingWindow : public views::WidgetDelegateView {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
  private:
+  enum {
+    kInit,
+    kShowAnimation,
+    kStartDrawing,
+    kEndDrawing,
+  };
+  int32 state_;
   DrawingView* drawing_view_;
+  ShowAnimationView* animation_;
   DISALLOW_COPY_AND_ASSIGN(DrawingWindow);
 };

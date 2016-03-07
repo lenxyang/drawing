@@ -8,6 +8,8 @@ executable("drawing") {
     "drawing.cc",
     "timer_helper.cc",
     "timer_helper.h",
+    "show_animation.cc",
+    "show_animation.h",
   ]
   deps = [
     "//nelf",
