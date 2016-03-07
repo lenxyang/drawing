@@ -72,5 +72,10 @@ class ConfigNode : public ::base::RefCounted<ConfigNode> {
 };
 
 bool StringToIntVec(const std::string& text, std::vector<int>* vec);
+bool StringToFloatVec(const std::string& text, std::vector<float>* vec);
+bool StringToFloat4(const std::string& text, float* v);
 gfx::Rect StringToRect(const std::string& str);
 SkColor StringToColor(const std::string& str);
+
+
+gfx::Rect CalcRelBounds(views::View* view, float relbounds[4]);

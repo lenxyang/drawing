@@ -28,6 +28,7 @@ class DrawingView : public views::View,
   DrawingView(ConfigNode* node);
   ~DrawingView();
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void Layout() override;
  private:
   void OnTimer() override;
   scoped_refptr<TimerHelper> timer_;
@@ -38,5 +39,7 @@ class DrawingView : public views::View,
   DrawingListView* drawing_list_view_;
   scoped_ptr<gfx::FontList> button_frontlist_;
   scoped_ptr<Drawing> drawing_list_;
+  float draw_list_bounds_[4];
+  float button_bounds_[4];
   DISALLOW_COPY_AND_ASSIGN(DrawingView);
 };

@@ -10,7 +10,6 @@ using ::base::UTF8ToUTF16;
 DrawingListView::DrawingListView(int32 count, ConfigNode* node) {
   ConfigNode* cfg = node->GetNodeFromPath("//draw_window/draw_view");
   fontlist_.reset(new gfx::FontList(cfg->GetChildTextString("font")));
-  gfx::Rect button_bounds = StringToRect(cfg->GetChildTextString("bounds"));
   SkColor color = StringToColor(cfg->GetChildTextString("text_color"));
   SkColor bgcolor = StringToColor(cfg->GetChildTextString("background_color"));
   for (int32 i = 0; i < count; ++i) {
@@ -50,31 +49,42 @@ DrawingView::DrawingView(ConfigNode* node)
       drawing_list_view_(NULL) {
   SetFocusable(true);
 
-  gfx::Rect bounds;
   ConfigNode* dview = node->GetNodeFromPath("//draw_window/draw_view");
   drawing_list_view_ = new DrawingListView(10, node);
   AddChildView(drawing_list_view_);
-  bounds = StringToRect(dview->GetChildTextString("bounds"));
-  drawing_list_view_->SetBoundsRect(bounds);
+  CHECK(StringToFloat4(dview->GetChildTextString("relbounds"), draw_list_bounds_));
 
   ConfigNode* buttoncfg = node->GetNodeFromPath("//draw_window/draw_button");
   button_frontlist_.reset(new gfx::FontList(buttoncfg->GetChildTextString("font")));
-  bounds = StringToRect(buttoncfg->GetChildTextString("bounds"));
   start_title_ = buttoncfg->GetChildTextString("start_title");
   stop_title_ = buttoncfg->GetChildTextString("stop_title");
   button_ = new views::LabelButton(this, ::base::UTF8ToUTF16(start_title_));
   button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   AddChildView(button_);
   button_->SetFontList(*button_frontlist_.get());
-  button_->SetBoundsRect(bounds);
+  CHECK(StringToFloat4(dview->GetChildTextString("relbounds"), button_bounds_));
 
   drawing_list_.reset(new Drawing);
   CHECK(drawing_list_->InitDrawingList(
       base::FilePath(UTF8ToUTF16("d://chrome/src")), 4));
-                                  
 }
 
 DrawingView::~DrawingView() {
+}
+
+void DrawingView::Layout() {
+  gfx::Rect bounds = this->bounds();
+  gfx::Rect list_bounds(bounds.width() * draw_list_bounds_[0],
+                        bounds.height() * draw_list_bounds_[1],
+                        bounds.width() * draw_list_bounds_[2],
+                        bounds.height() * draw_list_bounds_[3]);
+  drawing_list_view_->SetBoundsRect(list_bounds);
+
+  gfx::Rect button_bounds(bounds.width() * button_bounds_[0],
+                            bounds.height() * button_bounds_[1],
+                            bounds.width() * button_bounds_[2],
+                            bounds.height() * button_bounds_[3]);
+  button_->SetBoundsRect(list_bounds);
 }
 
 void DrawingView::OnTimer() {

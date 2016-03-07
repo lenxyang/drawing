@@ -312,14 +312,48 @@ bool StringToIntVec(const std::string& text, std::vector<int>* vec) {
   return true;
 }
 
+bool StringToFloatVec(const std::string& text, std::vector<float>* vec) {
+  std::vector<std::string> v;
+  ::base::SplitString(text, ',', &v);
+  for (auto iter = v.begin(); iter != v.end(); ++iter) {
+    std::string str = *iter;
+    if (str.empty())
+      return false;
+    if (str[str.length() - 1] == 'f')
+      str = str.substr(0, str.length() - 1);
+    double d;
+    if (!::base::StringToDouble(str, &d))
+      return false;
+
+    vec->push_back((float)d);
+  }
+  return true;
+}
+
 gfx::Rect StringToRect(const std::string& str) {
   std::vector<int32> vec;
   CHECK(StringToIntVec(str, &vec));
   return gfx::Rect(vec[0], vec[1], vec[2], vec[3]);
 }
 
+bool StringToFloat4(const std::string& str, float* v) {
+  std::vector<float> vec;
+  CHECK(StringToFloatVec(str, &vec));
+  v[0] = vec[0];
+  v[1] = vec[1];
+  v[2] = vec[2];
+  v[3] = vec[3];
+  DCHECK_EQ(vec.size(), 4u);
+  return true;
+}
+
 SkColor StringToColor(const std::string& str) {
   std::vector<int32> vec;
   CHECK(StringToIntVec(str, &vec));
   return SkColorSetARGB(vec[0], vec[1], vec[2], vec[3]);
+}
+
+
+gfx::Rect CalcRelBounds(views::View* view, float relbounds[4]) {
+  
 }

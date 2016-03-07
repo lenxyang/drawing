@@ -40,30 +40,36 @@ ImageAnimation::ImageAnimation(views::View* parent, ConfigNode* node) {
   image_->SetImage(imgskia);
   parent->AddChildView(image_);
 
-  init_bounds_ = StringToRect(node->GetChildTextString("init_bounds"));
-  target_bounds_ = StringToRect(node->GetChildTextString("target_bounds"));
+  CHECK(StringToFloat4(node->GetChildTextString("init_bounds"), init_bounds_));
+  CHECK(StringToFloat4(node->GetChildTextString("target_bounds"), target_bounds_));
   CHECK(::base::StringToInt64(node->GetChildTextString("duration"), &duration_));
   animator_.reset(new views::BoundsAnimator(parent));
   animator_->SetAnimationDuration(duration_);
 }
 
 void ImageAnimation::Start() {
-  image_->SetBoundsRect(init_bounds_);
+  gfx::Rect bounds = image_->parent()->bounds();
+  gfx::Rect init_bounds(bounds.width() * init_bounds_[0],
+                        bounds.height() * init_bounds_[1],
+                        bounds.width() * init_bounds_[2],
+                        bounds.height() * init_bounds_[3]);
+  gfx::Rect target_bounds(bounds.width() * target_bounds_[0],
+                          bounds.height() * target_bounds_[1],
+                          bounds.width() * target_bounds_[2],
+                          bounds.height() * target_bounds_[3]);
+
+  image_->SetBoundsRect(init_bounds);
   image_->SetVisible(true);
-  animator_->AnimateViewTo(image_, target_bounds_);
+  animator_->AnimateViewTo(image_, target_bounds);
 }
 
 void ImageAnimation::Reset(bool visible) {
+  gfx::Rect init_bounds(bounds.width() * init_bounds_[0],
+                        bounds.height() * init_bounds_[1],
+                        bounds.width() * init_bounds_[2],
+                        bounds.height() * init_bounds_[3]);
   image_->SetBoundsRect(init_bounds_);
   image_->SetVisible(visible);
-}
-
-void ImageAnimation::AddObserver(views::BoundsAnimatorObserver* observer) {
-  animator_->AddObserver(observer);
-}
-
-void ImageAnimation::RemoveObserver(views::BoundsAnimatorObserver* observer) {
-  animator_->RemoveObserver(observer);
 }
 
 // class ShowAnimationView
@@ -79,17 +85,10 @@ ShowAnimationView::ShowAnimationView(ConfigNode* node) {
     CHECK(::base::StringToInt64(child->GetAttr("frame"), &id));
     ImageAnimationPtr anim(new ImageAnimation(this, child));
     animations_[id].push_back(anim);
-    anim->AddObserver(this);
   }
 }
 
 ShowAnimationView::~ShowAnimationView() {
-  for (uint32 frame = 0; frame < animations_.size(); ++frame) {
-    for (auto iter = animations_[frame].begin();
-         iter != animations_[frame].end(); ++iter) {
-      (*iter)->RemoveObserver(this);
-    }
-  }
 }
 
 void ShowAnimationView::Start() {
@@ -108,7 +107,7 @@ void ShowAnimationView::Reset() {
 
 void ShowAnimationView::NextFrame() {
   current_frame_++;
-  completed_ = 0;
+  completed_++;
   for (auto iter = animations_[current_frame_].begin();
        iter != animations_[current_frame_].end(); ++iter) {
     (*iter)->Start();

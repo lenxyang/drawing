@@ -3,13 +3,13 @@
     <node name="draw_button">
       <font>Microsoft MHei, 72px</font>
       <bounds>500, 930, 800, 80</bounds>
-      <start_title>Go ! ! !</start_title>
+      <start_title>Go ! Go! Go!</start_title>
       <stop_title>Stop Here!</stop_title>
     </node>
 
     <node name="draw_view">
       <font>Microsoft MHei, 80px</font>
-      <bounds>500, 100, 800, 800</bounds>
+      <relbounds>0.1, 0.3, 0.8, 0.8</relbounds>
       <text_color>255, 1, 1, 0</text_color>
       <background_color>255, 255, 255, 255</background_color>
     </node>
@@ -18,26 +18,26 @@
 
   <node name="rounds">
     <node name="round0">
-      <node name="animations" frame_count="2">
+      <node name="animations" frame_count="3">
         <node name="animation" key="" frame="0">
-          <path>d:\data\camera.png</path>
-          <init_bounds>100, 100, 300, 300</init_bounds>
-          <target_bounds>900, 100, 600, 300</target_bounds>
-          <duration>1000</duration>
-        </node>
-
-        <node name="animation" key="" frame="0">
-          <path>d:\data\iphone6.png</path>
-          <init_bounds>100, 300, 300, 300</init_bounds>
-          <target_bounds>900, 300, 300, 300</target_bounds>
-          <duration>1000</duration>
+          <path>d:\data\round1.png</path>
+          <init_bounds>100, 100, 1800, 1000</init_bounds>
+          <target_bounds>100, 100, 800, 300</target_bounds>
+          <duration>600</duration>
         </node>
 
         <node name="animation" key="" frame="1">
           <path>d:\data\iphone6.png</path>
           <init_bounds>100, 300, 300, 300</init_bounds>
           <target_bounds>900, 300, 300, 300</target_bounds>
-          <duration>1000</duration>
+          <duration>960</duration>
+        </node>
+
+        <node name="animation" key="" frame="2">
+          <path>d:\data\iphone6.png</path>
+          <init_bounds>100, 300, 300, 300</init_bounds>
+          <target_bounds>900, 300, 300, 300</target_bounds>
+          <duration>900</duration>
         </node>
       </node>
     </node>

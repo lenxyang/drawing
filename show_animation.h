@@ -25,8 +25,8 @@ class ImageAnimation : public base::RefCounted<ImageAnimation> {
   PictureImageView* image_;
   scoped_ptr<views::BoundsAnimator> animator_;
   int64 duration_;
-  gfx::Rect init_bounds_;
-  gfx::Rect target_bounds_;
+  float init_bounds_[4];
+  float target_bounds_[4];
   DISALLOW_COPY_AND_ASSIGN(ImageAnimation);
 };
 
