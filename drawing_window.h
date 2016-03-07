@@ -18,6 +18,7 @@ class DrawingWindow : public views::WidgetDelegateView {
   void ShowWindow();
   void Close();
 
+  void Layout() override;
   bool CanResize() const override { return false; }
   bool CanMaximize() const override { return false; }
   bool CanMinimize() const override { return false; }

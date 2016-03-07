@@ -67,10 +67,6 @@ DrawingView::DrawingView(ConfigNode* node)
   button_->SetFontList(*button_frontlist_.get());
   button_->SetBoundsRect(bounds);
 
-  ConfigNode* cfg = node->GetNodeFromPath("//draw_window");
-  SkColor bgcol = StringToColor(cfg->GetChildTextString("background"));
-  set_background(views::Background::CreateSolidBackground(bgcol));
-
   drawing_list_.reset(new Drawing);
   CHECK(drawing_list_->InitDrawingList(
       base::FilePath(UTF8ToUTF16("d://chrome/src")), 4));

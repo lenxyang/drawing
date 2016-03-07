@@ -26,9 +26,17 @@ DrawingWindow::DrawingWindow(const ::base::FilePath& path) {
 
   drawing_view_ = new DrawingView(config.get());
   AddChildView(drawing_view_);
+
+  ConfigNode* cfg = config->GetNodeFromPath("//draw_window");
+  SkColor bgcol = StringToColor(cfg->GetChildTextString("background"));
+  set_background(views::Background::CreateSolidBackground(bgcol));
 }
 
 void DrawingWindow::WindowClosing() {
+}
+
+void DrawingWindow::Layout() {
+  drawing_view_->SetBoundsRect(GetContentsBounds());
 }
 
 
