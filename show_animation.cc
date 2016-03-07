@@ -65,7 +65,7 @@ ShowAnimationView::ShowAnimationView(ConfigNode* node) {
   ConfigNodes nodes = node->children();
   for (auto iter = nodes.begin(); iter != nodes.end(); ++iter) {
     ConfigNode* child = iter->get();
-    DCHECK(child->tagname() == "animation");
+    DCHECK(child->GetAttr("name") == "animation");
     int64 id;
     CHECK(::base::StringToInt64(node->GetAttr("frame_count"), &id));
     ImageAnimationPtr anim(new ImageAnimation(this, child));

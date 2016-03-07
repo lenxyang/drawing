@@ -10,7 +10,7 @@ class ShowAnimationView;
 
 class DrawingWindow : public views::WidgetDelegateView {
  public:
-  DrawingWindow(const base::FilePath& config);
+  DrawingWindow(const base::FilePath& config, int round);
   void ShowWindow();
   void Close();
 

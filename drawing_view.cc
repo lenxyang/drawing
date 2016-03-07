@@ -63,6 +63,7 @@ DrawingView::DrawingView(ConfigNode* node)
   start_title_ = buttoncfg->GetChildTextString("start_title");
   stop_title_ = buttoncfg->GetChildTextString("stop_title");
   button_ = new views::LabelButton(this, ::base::UTF8ToUTF16(start_title_));
+  button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   AddChildView(button_);
   button_->SetFontList(*button_frontlist_.get());
   button_->SetBoundsRect(bounds);

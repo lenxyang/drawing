@@ -2,6 +2,7 @@
 
 #include "base/files/file_util.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/background.h"
@@ -17,7 +18,7 @@
 using base::UTF8ToUTF16;
 
 
-DrawingWindow::DrawingWindow(const ::base::FilePath& path)
+DrawingWindow::DrawingWindow(const ::base::FilePath& path, int32 round)
     : state_(kInit) {
   SetFocusable(true);
 
@@ -33,8 +34,10 @@ DrawingWindow::DrawingWindow(const ::base::FilePath& path)
   SkColor bgcol = StringToColor(cfg->GetChildTextString("background"));
   set_background(views::Background::CreateSolidBackground(bgcol));
 
-  ConfigNode* animations_config = config->GetFirstChildTagged("animations");
-  animation_ = new ShowAnimationView(animations_config);
+  std::string roundname = ::base::StringPrintf("//rounds/round%d", round);
+  std::string animname = ::base::StringPrintf("//rounds/round%d/animations", round);
+  ConfigNode* animcfg = config->GetNodeFromPath(animname);
+  animation_ = new ShowAnimationView(animcfg);
   AddChildView(animation_);
 }
 
