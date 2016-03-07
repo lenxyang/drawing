@@ -15,4 +15,15 @@
     </node>
     <background>255, 255, 255, 255</background>
   </node>
+
+  <round total_count="5">
+    <round id="1">
+      <pictures>
+        <img></img>
+        <img></img>
+        <img></img>
+        <img></img>
+      </pictures>
+    </round>
+  </round>
 </config>

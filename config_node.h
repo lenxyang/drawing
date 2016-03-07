@@ -5,8 +5,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
-#include "azer/math/math.h"
 #include "azer/util/xml/xml.h"
+#include "ui/gfx/rect.h"
+#include "ui/gfx/color_utils.h"
 
 class ConfigNode;
 typedef scoped_refptr<ConfigNode> ConfigNodePtr;
@@ -69,3 +70,7 @@ class ConfigNode : public ::base::RefCounted<ConfigNode> {
   std::string text_;
   DISALLOW_COPY_AND_ASSIGN(ConfigNode);
 };
+
+bool StringToIntVec(const std::string& text, std::vector<int>* vec);
+gfx::Rect StringToRect(const std::string& str);
+SkColor StringToColor(const std::string& str);

@@ -293,3 +293,33 @@ std::string ConfigNode::print_node_recusive(int depth) {
 
   return str;
 }
+
+bool StringToIntVec(const std::string& text, std::vector<int>* vec) {
+  std::vector<std::string> v;
+  int iv;
+  ::base::SplitString(text, ',', &v);
+  for (auto iter = v.begin(); iter != v.end(); ++iter) {
+    std::string str = *iter;
+    if (str.empty())
+      return false;
+    if (str[str.length() - 1] == 'f')
+      str = str.substr(0, str.length() - 1);
+    if (!::base::StringToInt(str, &iv))
+      return false;
+
+    vec->push_back(iv);
+  }
+  return true;
+}
+
+gfx::Rect StringToRect(const std::string& str) {
+  std::vector<int32> vec;
+  CHECK(StringToIntVec(str, &vec));
+  return gfx::Rect(vec[0], vec[1], vec[2], vec[3]);
+}
+
+SkColor StringToColor(const std::string& str) {
+  std::vector<int32> vec;
+  CHECK(StringToIntVec(str, &vec));
+  return SkColorSetARGB(vec[0], vec[1], vec[2], vec[3]);
+}

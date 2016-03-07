@@ -74,9 +74,9 @@ class MainContents : public views::View,
 
   void ButtonPressed(views::Button* sender, const ui::Event& event) override {
     if (sender->tag() < kResetButtonBase) {
-      DrawingWindow* window = new DrawingWindow;
-      window->Init(::base::FilePath(UTF8ToUTF16("drawing/drawing.xml")));
-      window->Show();
+      ::base::FilePath path(UTF8ToUTF16("drawing/drawing.xml"));
+      DrawingWindow* window = new DrawingWindow(path);
+      window->ShowWindow();
     }
   }
 

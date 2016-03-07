@@ -3,6 +3,7 @@ executable("drawing") {
   sources = [
     "main.cc",
     "drawing_window.cc",
+    "drawing_view.cc",
     "config_node.cc",
     "drawing.cc",
     "timer_helper.cc",
