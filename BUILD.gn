@@ -4,6 +4,9 @@ executable("drawing") {
     "main.cc",
     "drawing_window.cc",
     "config_node.cc",
+    "drawing.cc",
+    "timer_helper.cc",
+    "timer_helper.h",
   ]
   deps = [
     "//nelf",

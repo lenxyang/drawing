@@ -42,43 +42,41 @@ SkColor StringToColor(const std::string& str) {
 }
 }
 
-class DrawingView : public views::View {
- public:
-  DrawingView(int32 count, ConfigNode* node) {
-   ConfigNode* cfg = node->GetNodeFromPath("//draw_window/draw_view");
-    fontlist_.reset(new gfx::FontList(cfg->GetChildTextString("font")));
-    gfx::Rect button_bounds = StringToRect(cfg->GetChildTextString("bounds"));
-
-    for (int32 i = 0; i < count; ++i) {
-      labels_.push_back(new views::Label());
-      AddChildView(labels_.back());
-      labels_.back()->SetFontList(*fontlist_.get());
-    }
+DrawingView::DrawingView(int32 count, ConfigNode* node) {
+  ConfigNode* cfg = node->GetNodeFromPath("//draw_window/draw_view");
+  fontlist_.reset(new gfx::FontList(cfg->GetChildTextString("font")));
+  gfx::Rect button_bounds = StringToRect(cfg->GetChildTextString("bounds"));
+  SkColor color = StringToColor(cfg->GetChildTextString("text_color"));
+  SkColor bgcolor = StringToColor(cfg->GetChildTextString("background_color"));
+  for (int32 i = 0; i < count; ++i) {
+    labels_.push_back(new views::Label());
+    AddChildView(labels_.back());
+    labels_.back()->SetFontList(*fontlist_.get());
+    labels_.back()->SetEnabledColor(color);
+    labels_.back()->SetBackgroundColor(bgcolor);
+    labels_.back()->SetAutoColorReadabilityEnabled(false);
   }
+}
 
-  void Layout() override {
-    gfx::Rect bounds = std::move(GetContentsBounds());
-    int y = bounds.y();
-    for (auto iter = labels_.begin(); iter != labels_.end(); ++iter) {
-      views::Label* label = *iter;
-      label->SetBounds(bounds.x(), y, bounds.width(), kCellHeight);
-      y += kCellHeight;
-    }
+void DrawingView::Layout() {
+  gfx::Rect bounds = std::move(GetContentsBounds());
+  int y = bounds.y();
+  int32 height = bounds.height() / labels_.size();
+  for (auto iter = labels_.begin(); iter != labels_.end(); ++iter) {
+    views::Label* label = *iter;
+    gfx::Rect rect(bounds.x(), y, bounds.width(), height);
+    label->SetBoundsRect(rect);
+    y = rect.bottom();
   }
+}
 
-  void SetContentsList(const std::vector<std::string>& list) {
-    int32 i = 0;
-    for (auto iter = list.begin(); iter != list.end() && i < labels_.size();
-         ++iter, ++i) {
-      labels_[i]->SetText(UTF8ToUTF16(*iter));
-    }
+void DrawingView::SetContentsList(const std::vector<std::string>& list) {
+  int32 i = 0;
+  for (auto iter = list.begin(); iter != list.end() && i < labels_.size();
+       ++iter, ++i) {
+    labels_[i]->SetText(UTF8ToUTF16(*iter));
   }
- private:
-  std::vector<views::Label*> labels_;
-  scoped_ptr<gfx::FontList> fontlist_;
-  static const int32 kCellHeight = 32;
-  DISALLOW_COPY_AND_ASSIGN(DrawingView);
-};
+}
 
 WindowContents::WindowContents(ConfigNode* node) 
     : drawing_(false),
@@ -86,9 +84,16 @@ WindowContents::WindowContents(ConfigNode* node)
       drawing_view_(NULL) {
   SetFocusable(true);
 
+  gfx::Rect bounds;
+  ConfigNode* dview = node->GetNodeFromPath("//draw_window/draw_view");
+  drawing_view_ = new DrawingView(10, node);
+  AddChildView(drawing_view_);
+  bounds = StringToRect(dview->GetChildTextString("bounds"));
+  drawing_view_->SetBoundsRect(bounds);
+
   ConfigNode* buttoncfg = node->GetNodeFromPath("//draw_window/draw_button");
   button_frontlist_.reset(new gfx::FontList(buttoncfg->GetChildTextString("font")));
-  gfx::Rect bounds = StringToRect(buttoncfg->GetChildTextString("bounds"));
+  bounds = StringToRect(buttoncfg->GetChildTextString("bounds"));
   start_title_ = buttoncfg->GetChildTextString("start_title");
   stop_title_ = buttoncfg->GetChildTextString("stop_title");
   button_ = new views::LabelButton(this, ::base::UTF8ToUTF16(start_title_));
@@ -96,22 +101,33 @@ WindowContents::WindowContents(ConfigNode* node)
   button_->SetFontList(*button_frontlist_.get());
   button_->SetBoundsRect(bounds);
 
-  ConfigNode* dview = node->GetNodeFromPath("//draw_window/draw_view");
-  drawing_view_ = new DrawingView(20, node);
-  AddChildView(drawing_view_);
-  bounds = StringToRect(dview->GetChildTextString("bounds"));
-  drawing_view_->SetBoundsRect(bounds);
-
   ConfigNode* cfg = node->GetNodeFromPath("//draw_window");
   SkColor bgcol = StringToColor(cfg->GetChildTextString("background"));
   set_background(views::Background::CreateSolidBackground(bgcol));
+
+  drawing_list_.reset(new Drawing);
+  CHECK(drawing_list_->InitDrawingList(
+      base::FilePath(UTF8ToUTF16("d://chrome/src")), 4));
+                                  
 }
 
 void WindowContents::WindowClosing() {
 }
 
+void WindowContents::OnTimer() {
+  std::vector<std::string> ret;
+  drawing_list_->Shuff(10, &ret);
+  drawing_view_->SetContentsList(ret);
+}
+
 void WindowContents::ButtonPressed(views::Button* sender, const ui::Event& event) {
-  button_->SetText(::base::UTF8ToUTF16(stop_title_));
+  if (!timer_.get()) {
+    timer_ = new TimerHelper(::base::TimeDelta::FromMilliseconds(30), true, this);
+    timer_->Reset();
+    button_->SetText(::base::UTF8ToUTF16(stop_title_));
+  } else {
+    timer_->Stop();
+  }
 }
 
 base::string16 WindowContents::GetWindowTitle() const {
