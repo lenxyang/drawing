@@ -17,12 +17,59 @@
   </node>
 
   <node name="rounds">
-    <node name="round1">
+    <node name="round0">
       <node name="animations" frame_count="2">
+        <node name="animation" key="" frame="0">
+          <path>d:\data\camera.png</path>
+          <init_bounds>100, 100, 300, 300</init_bounds>
+          <target_bounds>900, 100, 600, 300</target_bounds>
+          <duration>1000</duration>
+        </node>
+
+        <node name="animation" key="" frame="0">
+          <path>d:\data\iphone6.png</path>
+          <init_bounds>100, 300, 300, 300</init_bounds>
+          <target_bounds>900, 300, 300, 300</target_bounds>
+          <duration>1000</duration>
+        </node>
+
         <node name="animation" key="" frame="1">
+          <path>d:\data\iphone6.png</path>
+          <init_bounds>100, 300, 300, 300</init_bounds>
+          <target_bounds>900, 300, 300, 300</target_bounds>
+          <duration>1000</duration>
+        </node>
+      </node>
+    </node>
+
+    <node name="round1">
+      <node name="animations" frame_count="1">
+        <node name="animation" key="" frame="0">
           <path>camera.png</path>
-          <init_bounds>100 100 300 300</init_bounds>
-          <target_bounds>800 800 300 300</target_bounds>
+          <init_bounds>100, 100, 300, 300</init_bounds>
+          <target_bounds>800, 800, 300, 300</target_bounds>
+          <duration>1000</duration>
+        </node>
+      </node>
+    </node>
+
+    <node name="round2">
+      <node name="animations" frame_count="1">
+        <node name="animation" key="" frame="0">
+          <path>camera.png</path>
+          <init_bounds>100, 100, 300, 300</init_bounds>
+          <target_bounds>800, 800, 300, 300</target_bounds>
+          <duration>1000</duration>
+        </node>
+      </node>
+    </node>
+
+    <node name="round3">
+      <node name="animations" frame_count="1">
+        <node name="animation" key="" frame="0">
+          <path>camera.png</path>
+          <init_bounds>100, 100, 300, 300</init_bounds>
+          <target_bounds>800, 800, 300, 300</target_bounds>
           <duration>1000</duration>
         </node>
       </node>

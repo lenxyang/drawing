@@ -27,9 +27,6 @@ DrawingWindow::DrawingWindow(const ::base::FilePath& path, int32 round)
   ConfigNodePtr config = ConfigNode::InitFromXMLStr(str);
   CHECK(config.get());
 
-  drawing_view_ = new DrawingView(config.get());
-  AddChildView(drawing_view_);
-
   ConfigNode* cfg = config->GetNodeFromPath("//draw_window");
   SkColor bgcol = StringToColor(cfg->GetChildTextString("background"));
   set_background(views::Background::CreateSolidBackground(bgcol));
@@ -39,6 +36,23 @@ DrawingWindow::DrawingWindow(const ::base::FilePath& path, int32 round)
   ConfigNode* animcfg = config->GetNodeFromPath(animname);
   animation_ = new ShowAnimationView(animcfg);
   AddChildView(animation_);
+
+  drawing_view_ = new DrawingView(config.get());
+  AddChildView(drawing_view_);
+  drawing_view_->SetVisible(false);
+
+  // delegate and views must be create by "new"
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams wparams;
+  wparams.parent = NULL;
+  wparams.type = views::Widget::InitParams::TYPE_WINDOW;
+  wparams.delegate = this;
+  wparams.context  = NULL;
+  wparams.bounds = gfx::Rect(0, 0, 800, 600);
+  widget->Init(wparams);
+
+  views::FocusManager* fmgr = widget->GetFocusManager();
+  DCHECK(fmgr);
 }
 
 void DrawingWindow::WindowClosing() {
@@ -59,15 +73,14 @@ bool DrawingWindow::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool DrawingWindow::OnKeyReleased(const ui::KeyEvent& event) {
-  if (state_ == kEndDrawing || state_ == kInit) {
-    if (event.key_code() == ui::VKEY_ESCAPE)
-      GetWidget()->Close();
-  }
+  if (event.key_code() == ui::VKEY_ESCAPE)
+    GetWidget()->Hide();
 
   if (event.key_code() == ui::VKEY_RETURN
       || event.key_code() == ui::VKEY_SPACE) {
     if (state_ == kInit) {
       state_ = kShowAnimation;
+      animation_->AddObserver(this);
       animation_->Start();
     } else if (state_ == kStartDrawing) {
     } else {
@@ -78,21 +91,13 @@ bool DrawingWindow::OnKeyReleased(const ui::KeyEvent& event) {
 }
 
 void DrawingWindow::ShowWindow() {
-  // delegate and views must be create by "new"
-  views::Widget* widget = new views::Widget;
-  views::Widget::InitParams wparams;
-  wparams.parent = NULL;
-  wparams.type = views::Widget::InitParams::TYPE_WINDOW;
-  wparams.delegate = this;
-  wparams.context  = NULL;
-  wparams.bounds = gfx::Rect(0, 0, 800, 600);
-  widget->Init(wparams);
-  widget->SetFullscreen(true);
+  GetWidget()->SetFullscreen(true);
+  GetWidget()->Show();
   RequestFocus();
+}
 
-  views::FocusManager* fmgr = widget->GetFocusManager();
-  DCHECK(fmgr);
-
-  widget->Show();
+void DrawingWindow::OnBoundsAnimatorDone(ShowAnimationView* view) {
+  drawing_view_->SetVisible(true);
+  animation_->RemoveObserver(this);
 }
 

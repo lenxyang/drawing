@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/observer_list.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -18,6 +19,8 @@ class ImageAnimation : public base::RefCounted<ImageAnimation> {
 
   void Start();
   void Reset(bool b);
+  void AddObserver(views::BoundsAnimatorObserver* obsever);
+  void RemoveObserver(views::BoundsAnimatorObserver* obsever);
  private:
   PictureImageView* image_;
   scoped_ptr<views::BoundsAnimator> animator_;
@@ -25,6 +28,12 @@ class ImageAnimation : public base::RefCounted<ImageAnimation> {
   gfx::Rect init_bounds_;
   gfx::Rect target_bounds_;
   DISALLOW_COPY_AND_ASSIGN(ImageAnimation);
+};
+
+class ShowAnimationView;
+class ShowAnimationViewObserver {
+ public:
+  virtual void OnBoundsAnimatorDone(ShowAnimationView* view) {}
 };
 
 class ShowAnimationView : public views::View,
@@ -37,11 +46,14 @@ class ShowAnimationView : public views::View,
   void Reset();
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
+  void AddObserver(ShowAnimationViewObserver* observer);
+  void RemoveObserver(ShowAnimationViewObserver* observer);
  private:
   void NextFrame();
   void InitAnimation(ConfigNode* node, PictureImageView* view);
   std::vector<ImageAnimationPtrs> animations_;
   int32 current_frame_;
   int32 completed_;
+  ObserverList<ShowAnimationViewObserver> observers_;
   DISALLOW_COPY_AND_ASSIGN(ShowAnimationView);
 };

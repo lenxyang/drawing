@@ -32,6 +32,11 @@ class MainContents : public views::View,
       reset_buttons_.back()->set_tag(kResetButtonBase + i);
     }
 
+    ::base::FilePath path(UTF8ToUTF16("drawing/drawing.xml"));
+    for (int32 i = 0; i < kRoundCount; ++i) {
+      windows_.push_back(new DrawingWindow(path, i));
+    }
+
     Layout();
   }
 
@@ -74,9 +79,7 @@ class MainContents : public views::View,
 
   void ButtonPressed(views::Button* sender, const ui::Event& event) override {
     if (sender->tag() < kResetButtonBase) {
-      ::base::FilePath path(UTF8ToUTF16("drawing/drawing.xml"));
-      DrawingWindow* window = new DrawingWindow(path, 1);
-      window->ShowWindow();
+      windows_[sender->tag()]->ShowWindow();
     }
   }
 
@@ -84,6 +87,7 @@ class MainContents : public views::View,
   std::vector<nelf::Button*> buttons_;
   std::vector<nelf::Button*> reset_buttons_;
   std::vector<nelf::Button*> views_buttons_;
+  std::vector<DrawingWindow*> windows_;
   static const int32 kResetButtonBase = 1000;
   static const int32 kViewtButtonBase = 100;
   static const int32 kRoundCount = 4;

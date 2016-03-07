@@ -36,6 +36,7 @@ ImageAnimation::ImageAnimation(views::View* parent, ConfigNode* node) {
   gfx::Image img = gfx::Image::CreateFrom1xPNGBytes(
       (uint8*)contents.c_str(), contents.length());
   const gfx::ImageSkia* imgskia = img.ToImageSkia();
+  image_ = new PictureImageView;
   image_->SetImage(imgskia);
   parent->AddChildView(image_);
 
@@ -57,6 +58,14 @@ void ImageAnimation::Reset(bool visible) {
   image_->SetVisible(visible);
 }
 
+void ImageAnimation::AddObserver(views::BoundsAnimatorObserver* observer) {
+  animator_->AddObserver(observer);
+}
+
+void ImageAnimation::RemoveObserver(views::BoundsAnimatorObserver* observer) {
+  animator_->RemoveObserver(observer);
+}
+
 // class ShowAnimationView
 ShowAnimationView::ShowAnimationView(ConfigNode* node) {
   int64 frame_count = 0;
@@ -67,13 +76,20 @@ ShowAnimationView::ShowAnimationView(ConfigNode* node) {
     ConfigNode* child = iter->get();
     DCHECK(child->GetAttr("name") == "animation");
     int64 id;
-    CHECK(::base::StringToInt64(node->GetAttr("frame_count"), &id));
+    CHECK(::base::StringToInt64(child->GetAttr("frame"), &id));
     ImageAnimationPtr anim(new ImageAnimation(this, child));
     animations_[id].push_back(anim);
+    anim->AddObserver(this);
   }
 }
 
 ShowAnimationView::~ShowAnimationView() {
+  for (uint32 frame = 0; frame < animations_.size(); ++frame) {
+    for (auto iter = animations_[frame].begin();
+         iter != animations_[frame].end(); ++iter) {
+      (*iter)->RemoveObserver(this);
+    }
+  }
 }
 
 void ShowAnimationView::Start() {
@@ -92,7 +108,7 @@ void ShowAnimationView::Reset() {
 
 void ShowAnimationView::NextFrame() {
   current_frame_++;
-  completed_++;
+  completed_ = 0;
   for (auto iter = animations_[current_frame_].begin();
        iter != animations_[current_frame_].end(); ++iter) {
     (*iter)->Start();
@@ -103,9 +119,21 @@ void ShowAnimationView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   if (++completed_ == static_cast<int32>(animations_[current_frame_].size())) {
     if (current_frame_ < animations_.size() - 1) {
       NextFrame();
+    } else {
+      FOR_EACH_OBSERVER(ShowAnimationViewObserver,
+                        observers_,
+                        OnBoundsAnimatorDone(this));
     }
   }
 }
 
 void ShowAnimationView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
+}
+
+void ShowAnimationView::AddObserver(ShowAnimationViewObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ShowAnimationView::RemoveObserver(ShowAnimationViewObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
